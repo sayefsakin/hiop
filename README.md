@@ -4,13 +4,33 @@
 HiOp is an optimization solver for solving certain mathematical optimization problems expressed as nonlinear programming problems. HiOp is a lightweight HPC solver that leverages application's existing data parallelism to parallelize the optimization iterations by using specialized linear algebra kernels.
 
 ## Build/install instructions
-HiOp uses a CMake-based build system. A standard build can be done by invoking in the 'build' directory the following 
+HiOp uses a CMake-based build system. In 'scripts' directory run 
+```shell
+$> source newellVariables.sh
+```
+A standard build can be done by invoking in the 'build' directory the following 
 ```shell 
-$> cmake ..
+$> cmake .. 
 $> make 
 $> make test
 $> make install
 ```
+If you wish to use COINHSL (necessary for sparse problems), after the first step
+```shell
+ccmake .
+cmake ..
+```
+and continue from make. In ccmake change the following variables into
+```shell
+COINHSL_INCLUDE_DIR              /qfs/projects/exasgd/newell/ipopt_3.13.4-hsl/include/coin-or/hsl
+COINHSL_LIBRARY                  /qfs/projects/exasgd/newell/ipopt_3.13.4-hsl/lib/libcoinhsl.so
+HIOP_COINHSL_DIR                 /qfs/projects/exasgd/newell/ipopt_3.13.4-hsl
+HIOP_SPARSE                      ON
+HIOP_USE_COINHSL                 ON
+METIS_INCLUDE_DIR                /share/apps/metis/5.1.0/include
+METIS_LIBRARY                    /share/apps/metis/5.1.0/lib/libmetis.so
+```
+
 This sequence will build HiOp, run integrity and correctness tests, and install the headers and the library in the directory '_dist-default-build' in HiOp's root directory. 
 
 Command `make test` runs extensive tests of the various modules of HiOp to check integrity and correctness. The tests suite range from unit testing to solving concrete optimization problems and checking the performance of HiOp solvers on these problems against known solutions. By default `make test` runs `mpirun` locally, which may not work on some HPC machines. For these HiOp allows using `bsub` to schedule `make test` on the compute nodes; to enable this, the use should use *-DHIOP_TEST_WITH_BSUB=ON* with cmake when building and run `make test` in a bsub shell session, for example,

@@ -1,6 +1,3 @@
-if [ ! -v BUILDDIR ]; then
-  echo BUILDDIR is not set! Your paths may be misconfigured.
-fi
 export PROJ_DIR=/qfs/projects/exasgd
 export APPS_DIR=/share/apps
 export SPACK_ARCH=linux-rhel7-power9le
