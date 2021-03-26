@@ -12,7 +12,6 @@
  *            4*x_1 + 2*x_2                     == 10
  *        5<= 2*x_1         + x_3
  *        1<= 2*x_1                 + 0.5*x_i   <= 2*n, for i=4,...,n
- *                          + 2*x_3 + x_i       == 4,   for i=4,...,n
  *        x_1 free
  *        0.0 <= x_2
  *        1.5 <= x_3 <= 10
@@ -25,7 +24,7 @@
  *
  *
  */
-Ex8::Ex8(int n, bool convex_obj, bool rankdefic_Jac_eq, bool rankdefic_Jac_ineq)
+Ex7::Ex7(int n, bool convex_obj, bool rankdefic_Jac_eq, bool rankdefic_Jac_ineq)
   : convex_obj_{convex_obj},
     rankdefic_eq_(rankdefic_Jac_eq),
     rankdefic_ineq_(rankdefic_Jac_ineq),
@@ -34,17 +33,17 @@ Ex8::Ex8(int n, bool convex_obj, bool rankdefic_Jac_eq, bool rankdefic_Jac_ineq)
 {
   assert(n>=3);
   if(n>3)
-    n_cons += 2*(n-3);
+    n_cons += n-3;
   n_cons += rankdefic_eq_ + rankdefic_ineq_;
 }
 
-Ex8::~Ex8()
+Ex7::~Ex7()
 {}
 
-bool Ex8::get_prob_sizes(long long& n, long long& m)
+bool Ex7::get_prob_sizes(long long& n, long long& m)
   { n=n_vars; m=n_cons; return true; }
 
-bool Ex8::get_vars_info(const long long& n, double *xlow, double* xupp, NonlinearityType* type)
+bool Ex7::get_vars_info(const long long& n, double *xlow, double* xupp, NonlinearityType* type)
 {
   assert(n==n_vars);
   for(long long i=0; i<n; i++) {
@@ -57,7 +56,7 @@ bool Ex8::get_vars_info(const long long& n, double *xlow, double* xupp, Nonlinea
   return true;
 }
 
-bool Ex8::get_cons_info(const long long& m, double* clow, double* cupp, NonlinearityType* type)
+bool Ex7::get_cons_info(const long long& m, double* clow, double* cupp, NonlinearityType* type)
 {
   assert(m==n_cons);
   long long conidx{0};
@@ -65,9 +64,8 @@ bool Ex8::get_cons_info(const long long& m, double* clow, double* cupp, Nonlinea
   clow[conidx]= 5.0;     cupp[conidx]= 1e20;      type[conidx++]=hiopInterfaceBase::hiopLinear;
   for(long long i=3; i<n_vars; i++) {
     clow[conidx] = 1.0;   cupp[conidx]= 2*n_vars; type[conidx++]=hiopInterfaceBase::hiopLinear;
-    clow[conidx] = 4.0;   cupp[conidx]= 4.0; type[conidx++]=hiopInterfaceBase::hiopLinear;
-
   }
+
   if(rankdefic_ineq_) {
     // [-inf] <= 4*x_1 + 2*x_3 <= [ 19 ]
     clow[conidx] = -1e+20;   cupp[conidx] = 19.;  type[conidx++]=hiopInterfaceBase::hiopNonlinear;
@@ -81,7 +79,7 @@ bool Ex8::get_cons_info(const long long& m, double* clow, double* cupp, Nonlinea
   return true;
 }
 
-bool Ex8::get_sparse_blocks_info(int& nx,
+bool Ex7::get_sparse_blocks_info(int& nx,
 					    int& nnz_sparse_Jaceq, int& nnz_sparse_Jacineq,
 					    int& nnz_sparse_Hess_Lagr)
 {
@@ -92,7 +90,7 @@ bool Ex8::get_sparse_blocks_info(int& nx,
     return true;
 }
 
-bool Ex8::eval_f(const long long& n, const double* x, bool new_x, double& obj_value)
+bool Ex7::eval_f(const long long& n, const double* x, bool new_x, double& obj_value)
 {
   assert(n==n_vars);
   obj_value=0.;
@@ -101,14 +99,14 @@ bool Ex8::eval_f(const long long& n, const double* x, bool new_x, double& obj_va
   return true;
 }
 
-bool Ex8::eval_grad_f(const long long& n, const double* x, bool new_x, double* gradf)
+bool Ex7::eval_grad_f(const long long& n, const double* x, bool new_x, double* gradf)
 {
   assert(n==n_vars);
   for(auto i=0;i<n;i++) gradf[i] = (2*convex_obj_-1)*pow(x[i]-1.,3) + x[i];
   return true;
 }
 
-bool Ex8::eval_cons(const long long& n, const long long& m,
+bool Ex7::eval_cons(const long long& n, const long long& m,
 			 const long long& num_cons, const long long* idx_cons,
 			 const double* x, bool new_x, double* cons)
 {
@@ -116,7 +114,7 @@ bool Ex8::eval_cons(const long long& n, const long long& m,
 }
 
 /* Four constraints no matter how large n is */
-bool Ex8::eval_cons(const long long& n, const long long& m,
+bool Ex7::eval_cons(const long long& n, const long long& m,
 		    const double* x, bool new_x, double* cons)
 {
   assert(n==n_vars); assert(m==n_cons);
@@ -136,9 +134,6 @@ bool Ex8::eval_cons(const long long& n, const long long& m,
   // --- constraint 3 body --->   2*x_1 + 0.5*x_i, for i>=4
   for(auto i=3; i<n; i++) {
     cons[conidx++] += 2*x[0] + 0.5*x[i];
-  // --- constraint 4 body --->   2*x_3 + 1*x_i, for i>=4
-  for(auto i=3; i<n; i++) {
-    cons[conidx++] += 2*x[2] + 1*x[i];
   }
 
   if(rankdefic_ineq_) {
@@ -155,7 +150,7 @@ bool Ex8::eval_cons(const long long& n, const long long& m,
   return true;
 }
 
-bool Ex8::eval_Jac_cons(const long long& n, const long long& m,
+bool Ex7::eval_Jac_cons(const long long& n, const long long& m,
 			     const long long& num_cons, const long long* idx_cons,
 			     const double* x, bool new_x,
 			     const int& nnzJacS, int* iJacS, int* jJacS, double* MJacS)
@@ -163,7 +158,7 @@ bool Ex8::eval_Jac_cons(const long long& n, const long long& m,
   return false;
 }
 
-bool Ex8::eval_Jac_cons(const long long& n, const long long& m,
+bool Ex7::eval_Jac_cons(const long long& n, const long long& m,
 			     const double* x, bool new_x,
 			     const int& nnzJacS, int* iJacS, int* jJacS, double* MJacS)
 {
@@ -190,10 +185,6 @@ bool Ex8::eval_Jac_cons(const long long& n, const long long& m,
         // --- constraint 3 body --->   2*x_1 + 0.5*x_i, for i>=4
         for(auto i=3; i<n; i++){
             iJacS[nnzit] = conidx;   jJacS[nnzit++] = 0;
-            iJacS[nnzit] = conidx;   jJacS[nnzit++] = i;
-            conidx++;
-        // --- constraint 4 body --->   2*x_3 + 1*x_i, for i>=4
-            iJacS[nnzit] = conidx;   jJacS[nnzit++] = 2;
             iJacS[nnzit] = conidx;   jJacS[nnzit++] = i;
             conidx++;
         }
@@ -230,9 +221,6 @@ bool Ex8::eval_Jac_cons(const long long& n, const long long& m,
         for(auto i=3; i<n; i++){
             MJacS[nnzit++] = 2;
             MJacS[nnzit++] = 0.5;
-        // --- constraint 4 body --->   2*x_3 + 1*x_i, for i>=4
-            MJacS[nnzit++] = 2;
-            MJacS[nnzit++] = 1;
         }
 
         if(rankdefic_ineq_) {
@@ -251,7 +239,7 @@ bool Ex8::eval_Jac_cons(const long long& n, const long long& m,
     return true;
 }
 
-bool Ex8::eval_Hess_Lagr(const long long& n, const long long& m,
+bool Ex7::eval_Hess_Lagr(const long long& n, const long long& m,
 			      const double* x, bool new_x, const double& obj_factor,
 			      const double* lambda, bool new_lambda,
 			      const int& nnzHSS, int* iHSS, int* jHSS, double* MHSS)
@@ -270,7 +258,7 @@ bool Ex8::eval_Hess_Lagr(const long long& n, const long long& m,
     return true;
 }
 
-bool Ex8::get_starting_point(const long long& n, double* x0)
+bool Ex7::get_starting_point(const long long& n, double* x0)
 {
   assert(n==n_vars);
   for(auto i=0; i<n; i++)

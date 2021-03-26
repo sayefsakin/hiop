@@ -1,5 +1,5 @@
-#ifndef HIOP_EXAMPLE_EX8
-#define HIOP_EXAMPLE_EX8
+#ifndef HIOP_EXAMPLE_EX7
+#define HIOP_EXAMPLE_EX7
 
 #include "hiopInterface.hpp"
 
@@ -28,7 +28,6 @@
  *            4*x_1 + 2*x_2                     == 10
  *        5<= 2*x_1         + x_3
  *        1<= 2*x_1                 + 0.5*x_i   <= 2*n, for i=4,...,n
- *                          + 2*x_3 + x_i       == 4,   for i=4,...,n
  *        x_1 free
  *        0.0 <= x_2
  *        1.5 <= x_3 <= 10
@@ -41,11 +40,11 @@
  *
  *
  */
-class Ex8 : public hiop::hiopInterfaceSparse
+class Ex7 : public hiop::hiopInterfaceSparse
 {
 public:
-  Ex8(int n, bool convex_obj, bool rankdefic_Jac_eq, bool rankdefic_Jac_ineq);
-  virtual ~Ex8();
+  Ex7(int n, bool convex_obj, bool rankdefic_Jac_eq, bool rankdefic_Jac_ineq);
+  virtual ~Ex7();
 
   virtual bool get_prob_sizes(long long& n, long long& m);
   virtual bool get_vars_info(const long long& n, double *xlow, double* xupp, NonlinearityType* type);
