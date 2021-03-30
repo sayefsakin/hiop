@@ -10,9 +10,9 @@
  *  min   (2*convex_obj-1)*sum 1/4* { (x_{i}-1)^4 : i=1,...,n} + 0.5x^Tx
  *  s.t.
  *            4*x_1 + 2*x_2                     == 10
- *        5<= 2*x_1         + x_3
- *        1<= 2*x_1                 + 0.5*x_i   <= 2*n, for i=2k+1,2k+3,...;k>=2
- *                          + 2*x_3 +     x_i   ==   6, for i=2k,2k+2,...;k>=2
+ *        5<= 2*x_1         +   x_3
+ *        1<= 2*x_1                 + 0.5*x_i   <= 2*n, for i=4,...,n
+ *                          + 2*x_3 +     x_i   =  4,   for i=4,...,n
  *        x_1 free
  *        0.0 <= x_2
  *        1.5 <= x_3 <= 10
@@ -34,7 +34,7 @@ Ex7::Ex7(int n, bool convex_obj, bool rankdefic_Jac_eq, bool rankdefic_Jac_ineq)
 {
   assert(n>=3);
   if(n>3)
-    n_cons += n-3;
+    n_cons += 2*(n-3);
   n_cons += rankdefic_eq_ + rankdefic_ineq_;
 }
 
@@ -63,12 +63,9 @@ bool Ex7::get_cons_info(const long long& m, double* clow, double* cupp, Nonlinea
   long long conidx{0};
   clow[conidx]= 10.0;    cupp[conidx]= 10.0;      type[conidx++]=hiopInterfaceBase::hiopLinear;
   clow[conidx]= 5.0;     cupp[conidx]= 1e20;      type[conidx++]=hiopInterfaceBase::hiopLinear;
-  for(auto i=3; i<n_vars; i++) {
-    if(i%2==0) {
+  for(long long i=3; i<n_vars; i++) {
     clow[conidx] = 1.0;   cupp[conidx]= 2*n_vars; type[conidx++]=hiopInterfaceBase::hiopLinear;
-    } else {
-    clow[conidx] = 6.0;   cupp[conidx]= 6.0; type[conidx++]=hiopInterfaceBase::hiopLinear;
-    }
+    clow[conidx] = 4.0;   cupp[conidx]= 4.0; type[conidx++]=hiopInterfaceBase::hiopLinear;
   }
 
   if(rankdefic_ineq_) {
@@ -89,12 +86,8 @@ bool Ex7::get_sparse_blocks_info(int& nx,
 					    int& nnz_sparse_Hess_Lagr)
 {
     nx = n_vars;;
-    nnz_sparse_Jaceq =   2 + (n_vars-3) + 2*rankdefic_eq_;
-    nnz_sparse_Jacineq = 2 + (n_vars-3) + 2*rankdefic_ineq_;
-    if(nx%2==0) {
-      nnz_sparse_Jaceq++;
-      nnz_sparse_Jacineq--;
-    } 
+    nnz_sparse_Jaceq = 2   + 2*(n_vars-3) + 2*rankdefic_eq_;
+    nnz_sparse_Jacineq = 2 + 2*(n_vars-3) + 2*rankdefic_ineq_;
     nnz_sparse_Hess_Lagr = n_vars;
     return true;
 }
@@ -127,7 +120,7 @@ bool Ex7::eval_cons(const long long& n, const long long& m,
 		    const double* x, bool new_x, double* cons)
 {
   assert(n==n_vars); assert(m==n_cons);
-  assert(n_cons==2+n-3+rankdefic_eq_+rankdefic_ineq_);
+  assert(n_cons==2+2*(n-3)+rankdefic_eq_+rankdefic_ineq_);
 
   //local contributions to the constraints in cons are reset
   for(auto j=0;j<m; j++) cons[j]=0.;
@@ -141,12 +134,10 @@ bool Ex7::eval_cons(const long long& n, const long long& m,
   cons[conidx++] += 2*x[0] + 1*x[2];
 
   // --- constraint 3 body --->   2*x_1 + 0.5*x_i, for i>=4
+  // --- constraint 4 body --->   2*x_3 + x_i, for i>=4
   for(auto i=3; i<n; i++) {
-    if(i%2==0) {
-      cons[conidx++] += 2*x[0] + 0.5*x[i];
-    } else {
-      cons[conidx++] += 2*x[2] + x[i];
-    }
+    cons[conidx++] += 2*x[0] + 0.5*x[i];
+    cons[conidx++] += 2*x[2] + 1*x[i];
   }
 
   if(rankdefic_ineq_) {
@@ -178,7 +169,7 @@ bool Ex7::eval_Jac_cons(const long long& n, const long long& m,
     assert(n==n_vars); assert(m==n_cons);
     assert(n>=3);
 
-    assert(nnzJacS == 4 + 2*(n-3) + 2*rankdefic_eq_ + 2*rankdefic_ineq_);
+    assert(nnzJacS == 4 + 4*(n-3) + 2*rankdefic_eq_ + 2*rankdefic_ineq_);
 
 
     int nnzit{0};
@@ -196,17 +187,14 @@ bool Ex7::eval_Jac_cons(const long long& n, const long long& m,
         conidx++;
 
         // --- constraint 3 body --->   2*x_1 + 0.5*x_i, for i>=4
+        // --- constraint 4 body --->   2*x_3 + x_i, for i>=4
         for(auto i=3; i<n; i++){
-          if(i%2==0) {
             iJacS[nnzit] = conidx;   jJacS[nnzit++] = 0;
             iJacS[nnzit] = conidx;   jJacS[nnzit++] = i;
             conidx++;
-          } else {
             iJacS[nnzit] = conidx;   jJacS[nnzit++] = 2;
             iJacS[nnzit] = conidx;   jJacS[nnzit++] = i;
             conidx++;
-          }
-
         }
 
         if(rankdefic_ineq_) {
@@ -238,14 +226,12 @@ bool Ex7::eval_Jac_cons(const long long& n, const long long& m,
         MJacS[nnzit++] = 1;
 
         // --- constraint 3 body --->   2*x_1 + 0.5*x_4
+        // --- constraint 4 body --->   2*x_3 + x_4
         for(auto i=3; i<n; i++){
-          if(i%2==0) {
             MJacS[nnzit++] = 2;
             MJacS[nnzit++] = 0.5;
-          } else {
             MJacS[nnzit++] = 2;
             MJacS[nnzit++] = 1;
-          }
         }
 
         if(rankdefic_ineq_) {

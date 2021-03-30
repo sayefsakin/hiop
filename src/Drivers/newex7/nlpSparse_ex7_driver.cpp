@@ -75,8 +75,8 @@ int main(int argc, char **argv)
   if(!parse_arguments(argc, argv, n, selfCheck)) { usage(argv[0]); return 1;}
 
   bool convex_obj = false;
-  bool rankdefic_Jac_eq = true;
-  bool rankdefic_Jac_ineq = true;
+  bool rankdefic_Jac_eq = false;
+  bool rankdefic_Jac_ineq = false;
 
   Ex7 nlp_interface(n,convex_obj,rankdefic_Jac_eq,rankdefic_Jac_ineq);
   hiopNlpSparse nlp(nlp_interface);
@@ -85,7 +85,7 @@ int main(int argc, char **argv)
 //  nlp.options->SetIntegerValue("max_iter", 100);
 //  nlp.options->SetNumericValue("kappa1", 1e-8);
 //  nlp.options->SetNumericValue("kappa2", 1e-8);
-    nlp.options->SetStringValue("write_kkt", "yes");
+//   nlp.options->SetStringValue("write_kkt", "yes");
 //  nlp.options->SetStringValue("scaling_type", "none");
 //  nlp.options->SetStringValue("compute_mode", "hybrid");
   hiopAlgFilterIPMNewton solver(&nlp);
