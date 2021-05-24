@@ -1303,7 +1303,7 @@ void hiopMatrixSparseTriplet::convertToCSR(int &csr_nnz,
 }
 
 /*
-*  extend original Jac to [Jac -I I]
+*  extend original Hess to [Hess+diag_term]
 */
 void hiopMatrixSymSparseTriplet::set_Hess_FR(const hiopMatrixSparse& Hess,
                                              int* iHSS,
