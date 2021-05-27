@@ -80,6 +80,8 @@ public:
   virtual void setToZero();
   virtual void setToConstant(double c);
   virtual void copyFrom(const hiopMatrixSparse& dm);
+  virtual void copy_to(int* irow, int* jcol, double* val);
+  virtual void copy_to(hiopMatrixDense& W);
 
   virtual void copyRowsFrom(const hiopMatrix& src, const index_type* rows_idxs, size_type n_rows);
   
@@ -312,7 +314,7 @@ protected:
   mutable RowStartsInfo* row_starts_host;
   //mutable RowStartsInfo* row_starts;
 
-private:
+protected:
   RowStartsInfo* allocAndBuildRowStarts() const; 
 private:
   hiopMatrixRajaSparseTriplet() 
