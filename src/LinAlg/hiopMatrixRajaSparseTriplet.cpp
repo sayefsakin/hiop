@@ -1372,7 +1372,7 @@ startingAtAddSubDiagonalToStartingAt(int diag_src_start,
 }
 
 
-long long hiopMatrixRajaSymSparseTriplet::numberOfOffDiagNonzeros() const 
+size_type hiopMatrixRajaSymSparseTriplet::numberOfOffDiagNonzeros() const 
 {
   if(-1==nnz_offdiag_){
     nnz_offdiag_= nnz_;
