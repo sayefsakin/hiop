@@ -1115,7 +1115,7 @@ void hiopMatrixRajaSparseTriplet::set_Jac_FR(const hiopMatrixSparse& Jac_c,
     int idx_temp = ii+1;
     // copy from base Jac_c
     while(k_base < Jc_row_st_h[idx_temp]) {
-      std::cout<< "row: "<< ii << "k: " << k << " k_base: " << k_base << std::endl;
+      std::cout<< "row: "<< ii << " k: " << k << " k_base: " << k_base << std::endl;
        k++;
           k_base++;
     }
@@ -1135,6 +1135,7 @@ void hiopMatrixRajaSparseTriplet::set_Jac_FR(const hiopMatrixSparse& Jac_c,
 //        int idx_temp = i+1;
         // copy from base Jac_c
         while(k_base < Jc_row_st[i+1]) {
+	    iRow_[0] = 0;
 //          iRow_[k] = iJacS[k] = i;
 //          jCol_[k] = jJacS[k] = jcol_c[k_base];
           k++;
