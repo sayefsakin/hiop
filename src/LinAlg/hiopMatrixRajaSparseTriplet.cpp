@@ -1121,6 +1121,15 @@ void hiopMatrixRajaSparseTriplet::set_Jac_FR(const hiopMatrixSparse& Jac_c,
     }
   }
 
+  copyFromDev();
+  iRow_host_[0]=1;
+  values_host_[0]=2.0;
+  copyToDev();
+  setToConstant(5.0);
+  copyFromDev();
+  std::cout<<"1st val on host: " << values_host_[0]<<std::endl;
+
+
   // extend Jac to the p and n parts --- sparsity
   if(iJacS != nullptr && jJacS != nullptr) {
     
