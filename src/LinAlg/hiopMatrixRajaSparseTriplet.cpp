@@ -1099,6 +1099,8 @@ void hiopMatrixRajaSparseTriplet::set_Jac_FR(const hiopMatrixSparse& Jac_c,
     
   // extend Jac to the p and n parts --- sparsity
   if(iJacS != nullptr && jJacS != nullptr) {
+    
+    std::cout << "m_c: " << m_c << std::endl;
     // Jac for c(x) - p + n
     RAJA::forall<hiop_raja_exec>(
       RAJA::RangeSegment(0, m_c),
@@ -1109,23 +1111,25 @@ void hiopMatrixRajaSparseTriplet::set_Jac_FR(const hiopMatrixSparse& Jac_c,
 
         // copy from base Jac_c
         while(k_base < Jc_row_st[i+1]) {
-          iRow_[k] = iJacS[k] = i;
-          jCol_[k] = jJacS[k] = jcol_c[k_base];
+          assert( k < nnz_);
+//          iRow_[k] = iJacS[k] = i;
+//          jCol_[k] = jJacS[k] = jcol_c[k_base];
           k++;
           k_base++;
         }
 
         // extra parts for p and n
-        iRow_[k] = iJacS[k] = i;
-        jCol_[k] = jJacS[k] = n_c + i;
+//        iRow_[k] = iJacS[k] = i;
+//        jCol_[k] = jJacS[k] = n_c + i;
         k++;
         
-        iRow_[k] = iJacS[k] = i;
-        jCol_[k] = jJacS[k] = n_c + m_c + i;
+//        iRow_[k] = iJacS[k] = i;
+//        jCol_[k] = jJacS[k] = n_c + m_c + i;
         k++;
       }
     );
 
+    std::cout << "m_d: " << m_d << std::endl;
     // Jac for d(x) - p + n
     RAJA::forall<hiop_raja_exec>(
       RAJA::RangeSegment(0, m_d),
