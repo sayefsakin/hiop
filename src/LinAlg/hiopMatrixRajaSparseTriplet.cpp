@@ -1100,7 +1100,6 @@ void hiopMatrixRajaSparseTriplet::set_Jac_FR(const hiopMatrixSparse& Jac_c,
 
   auto& rm = umpire::ResourceManager::getInstance();
 
-  umpire::Allocator devalloc  = rm.getAllocator("HOST");
   umpire::Allocator hostalloc = rm.getAllocator("HOST");
   int* Jc_row_st_h = static_cast<int*>(hostalloc.allocate((m_c+1)*sizeof(int)));
   int* Jd_row_st_h = static_cast<int*>(hostalloc.allocate((m_d+1)*sizeof(int)));
@@ -1108,7 +1107,6 @@ void hiopMatrixRajaSparseTriplet::set_Jac_FR(const hiopMatrixSparse& Jac_c,
   rm.copy(Jc_row_st_h,Jc_row_st);
   rm.copy(Jd_row_st_h,Jd_row_st);
 
- 
   // extend Jac to the p and n parts --- sparsity
   if(iJacS != nullptr && jJacS != nullptr) {
     
@@ -1123,7 +1121,6 @@ void hiopMatrixRajaSparseTriplet::set_Jac_FR(const hiopMatrixSparse& Jac_c,
         int idx_temp = i+1;
         // copy from base Jac_c
         while(k_base < Jc_row_st_h[idx_temp]) {
-          assert( k < nnz_);
 //          iRow_[k] = iJacS[k] = i;
 //          jCol_[k] = jJacS[k] = jcol_c[k_base];
           k++;
@@ -1140,7 +1137,6 @@ void hiopMatrixRajaSparseTriplet::set_Jac_FR(const hiopMatrixSparse& Jac_c,
         k++;
       }
     );
-
     std::cout << "m_d: " << m_d << std::endl;
     // Jac for d(x) - p + n
     RAJA::forall<hiop_raja_exec>(
