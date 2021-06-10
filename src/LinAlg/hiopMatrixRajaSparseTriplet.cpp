@@ -1096,7 +1096,19 @@ void hiopMatrixRajaSparseTriplet::set_Jac_FR(const hiopMatrixSparse& Jac_c,
   }
   assert(J_d.row_starts_host);
   int* Jd_row_st = J_d.row_starts_host->idx_start_;
-    
+
+
+  auto& rm = umpire::ResourceManager::getInstance();
+
+  umpire::Allocator devalloc  = rm.getAllocator("HOST");
+  umpire::Allocator hostalloc = rm.getAllocator("HOST");
+  int* Jc_row_st_h = static_cast<int*>(hostalloc.allocate((m_c+1)*sizeof(int)));
+  int* Jd_row_st_h = static_cast<int*>(hostalloc.allocate((m_d+1)*sizeof(int)));
+
+  rm.copy(Jc_row_st_h,Jc_row_st);
+  rm.copy(Jd_row_st_h,Jd_row_st);
+
+ 
   // extend Jac to the p and n parts --- sparsity
   if(iJacS != nullptr && jJacS != nullptr) {
     
@@ -1108,9 +1120,8 @@ void hiopMatrixRajaSparseTriplet::set_Jac_FR(const hiopMatrixSparse& Jac_c,
       {
         int k_base = Jc_row_st[i];
         int k = k_base + 2*i; // append 2 nnz in each row
-        int idx_temp = i+1;
         // copy from base Jac_c
-        while(k_base < Jc_row_st[idx_temp]) {
+        while(k_base < Jc_row_st_host[i+1]) {
           assert( k < nnz_);
 //          iRow_[k] = iJacS[k] = i;
 //          jCol_[k] = jJacS[k] = jcol_c[k_base];
@@ -1212,6 +1223,8 @@ void hiopMatrixRajaSparseTriplet::set_Jac_FR(const hiopMatrixSparse& Jac_c,
     );
   }
   copyFromDev();
+  hostalloc.deallocate(Jc_row_st_h);
+    hostalloc.deallocate(Jd_row_st_h);  
 }
 
 /**********************************************************************************
