@@ -1118,7 +1118,7 @@ void hiopMatrixRajaSparseTriplet::set_Jac_FR(const hiopMatrixSparse& Jac_c,
       RAJA::RangeSegment(0, m_c),
       RAJA_LAMBDA(RAJA::Index_type i)
       {
-        int k_base = Jc_row_st[i];
+        int k_base = Jc_row_st_h[i];
         int k = k_base + 2*i; // append 2 nnz in each row
         // copy from base Jac_c
         while(k_base < Jc_row_st_h[i+1]) {
