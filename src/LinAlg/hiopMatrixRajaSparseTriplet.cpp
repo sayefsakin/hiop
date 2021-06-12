@@ -1164,11 +1164,13 @@ void hiopMatrixRajaSparseTriplet::set_Jac_FR(const hiopMatrixSparse& Jac_c,
         k++;
       }
     );
+    
+    m_d = m_c; // FIXME_NY: delete this line later!
     std::cout << "m_d: " << m_d << std::endl;
     // Jac for d(x) - p + n
     RAJA::forall<hiop_raja_exec>(
       RAJA::RangeSegment(0, m_d),
-      RAJA_LAMBDA(RAJA::Index_type i)
+      RAJA_LAMBDA(int i)
       {
         int k_base = Jd_row_st[i];
         int k = nnz_Jac_c_new + k_base + 2*i; // append 2 nnz in each row
