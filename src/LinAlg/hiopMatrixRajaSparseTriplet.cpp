@@ -1175,24 +1175,26 @@ void hiopMatrixRajaSparseTriplet::set_Jac_FR(const hiopMatrixSparse& Jac_c,
 
         // copy from base Jac_c
         while(k_base < Jd_row_st[i+1]) {
-          iRow_[k] = iJacS[k] = m_c + i;
-          jCol_[k] = jJacS[k] = jcol_d[k_base];
+            iRow_[0] = 0;
+//          iRow_[k] = iJacS[k] = m_c + i;
+//          jCol_[k] = jJacS[k] = jcol_d[k_base];
           k++;
           k_base++;
         }
 
         // extra parts for p and n
-        iRow_[k] = iJacS[k] = m_c + i;
-        jCol_[k] = jJacS[k] = n_d + 2*m_c + i;
+//        iRow_[k] = iJacS[k] = m_c + i;
+//        jCol_[k] = jJacS[k] = n_d + 2*m_c + i;
         k++;
         
-        iRow_[k] = iJacS[k] = m_c + i;
-        jCol_[k] = jJacS[k] = n_d + 2*m_c + m_d + i;
+//        iRow_[k] = iJacS[k] = m_c + i;
+//        jCol_[k] = jJacS[k] = n_d + 2*m_c + m_d + i;
         k++;
       }
     );
   }
 
+std::cout << "start to load values. " << std::endl;
   // extend Jac to the p and n parts --- element
   if(MJacS != nullptr) {
     const double* J_c_val = J_c.values_;
