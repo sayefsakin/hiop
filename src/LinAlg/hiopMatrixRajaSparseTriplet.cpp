@@ -1065,10 +1065,10 @@ void hiopMatrixRajaSparseTriplet::set_Jac_FR(const hiopMatrixSparse& Jac_c,
   const auto& J_d = dynamic_cast<const hiopMatrixRajaSparseTriplet&>(Jac_d);
     
   // shortcut to the original Jac
-  const int *irow_c = J_c.iRow_;
-  const int *jcol_c = J_c.jCol_;
-  const int *irow_d = J_d.iRow_;
-  const int *jcol_d = J_d.jCol_;
+  const int *irow_c = J_c.i_row();
+  const int *jcol_c = J_c.j_col();
+  const int *irow_d = J_d.i_row();
+  const int *jcol_d = J_d.j_col();
 
   // assuming original Jac is sorted!
   int nnz_Jac_c = J_c.numberOfNonzeros();
@@ -1116,19 +1116,22 @@ void hiopMatrixRajaSparseTriplet::set_Jac_FR(const hiopMatrixSparse& Jac_c,
     // copy from base Jac_c
     while(k_base < Jc_row_st_h[idx_temp]) {
       std::cout<< "row: "<< ii << " k: " << k << " k_base: " << k_base << std::endl;
-       k++;
-          k_base++;
+      k++;
+      k_base++;
     }
   }
 
+  iRow_host_[0]=100;
   copyFromDev();
-  iRow_host_[0]=1;
+  iRow_host_[0]=2;
   values_host_[0]=2.0;
   copyToDev();
   setToConstant(5.0);
   copyFromDev();
   std::cout<<"1st val on host: " << values_host_[0]<<std::endl;
+  std::cout<<"1st irow on host: " << iRow_host_[0]<<std::endl;
 
+  int* iRow = i_row();
 
   // extend Jac to the p and n parts --- sparsity
   if(iJacS != nullptr && jJacS != nullptr) {
@@ -1144,8 +1147,7 @@ void hiopMatrixRajaSparseTriplet::set_Jac_FR(const hiopMatrixSparse& Jac_c,
 //        int idx_temp = i+1;
         // copy from base Jac_c
         while(k_base < Jc_row_st[i+1]) {
-          int zero = 0;
-	    iRow_[zero] = zero;
+	        iRow[0] = 0;
 //          iRow_[k] = iJacS[k] = i;
 //          jCol_[k] = jJacS[k] = jcol_c[k_base];
           k++;

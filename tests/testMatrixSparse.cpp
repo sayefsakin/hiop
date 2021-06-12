@@ -160,6 +160,7 @@ int main(int argc, char** argv)
     local_ordinal_type nnz3 = nnz + nnz2 + 2*M_global + 2*M2;
     hiop::hiopMatrixSparse* m3xn3_sparse = 
       hiop::LinearAlgebraFactory::createMatrixSparse(M_global+M2, N_global+2*(M_global+M2), nnz3);
+    test.initializeMatrix(m3xn3_sparse, entries_per_row);
     fail += test.matrix_set_Jac_FR(m3xn3_dense, *m3xn3_sparse, *mxn_sparse, *m2xn_sparse);
 
     // Remove testing objects
