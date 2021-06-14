@@ -1160,15 +1160,17 @@ void hiopMatrixRajaSparseTriplet::set_Jac_FR(const hiopMatrixSparse& Jac_c,
 
         // extra parts for p and n
         iRow[k] = i;
-        iJacS[k] = i;
+//        iJacS[k] = i;
         jCol[k] = n_c + i;
-        jJacS[k] = n_c + i;
+//        jJacS[k] = n_c + i;
 //        iRow_[k] = iJacS[k] = i;
 //        jCol_[k] = jJacS[k] = n_c + i;
         k++;
         
         iRow[k] = i;
-        iJacS[k] = i;
+//        iJacS[k] = i;
+        jCol_[k] = n_c + m_c + i;
+//        jJacS[k] = n_c + m_c + i;
 //        iRow_[k] = iJacS[k] = i;
 //        jCol_[k] = jJacS[k] = n_c + m_c + i;
         k++;
