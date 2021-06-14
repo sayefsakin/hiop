@@ -1152,8 +1152,8 @@ void hiopMatrixRajaSparseTriplet::set_Jac_FR(const hiopMatrixSparse& Jac_c,
           jCol[k] = jcol_c[k_base];
           iJacS[k] = i;
           jJacS[k] = jcol_c[k_base];
-//          iRow[k] = iJacS[k] = i;
-//          jCol[k] = jJacS[k] = jcol_c[k_base];
+          iRow[k] = iJacS[k] = i;
+          jCol[k] = jJacS[k] = jcol_c[k_base];
           k++;
           k_base++;
         }
@@ -1163,16 +1163,16 @@ void hiopMatrixRajaSparseTriplet::set_Jac_FR(const hiopMatrixSparse& Jac_c,
         iJacS[k] = i;
         jCol[k] = n_c + i;
         jJacS[k] = n_c + i;
-//        iRow[k] = iJacS[k] = i;
-//        jCol[k] = jJacS[k] = n_c + i;
+        iRow[k] = iJacS[k] = i;
+        jCol[k] = jJacS[k] = n_c + i;
         k++;
         
         iRow[k] = i;
         iJacS[k] = i;
         jCol[k] = n_c + m_c + i;
         jJacS[k] = n_c + m_c + i;
-//        iRow[k] = iJacS[k] = i;
-//        jCol[k] = jJacS[k] = n_c + m_c + i;
+        iRow[k] = iJacS[k] = i;
+        jCol[k] = jJacS[k] = n_c + m_c + i;
         k++;
       }
     );
