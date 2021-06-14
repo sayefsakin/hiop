@@ -1131,7 +1131,8 @@ void hiopMatrixRajaSparseTriplet::set_Jac_FR(const hiopMatrixSparse& Jac_c,
   std::cout<<"1st val on host: " << values_host_[0]<<std::endl;
   std::cout<<"1st irow on host: " << iRow_host_[0]<<std::endl;
 
-  int* iRow = i_row();
+  int* iRow = iRow_;
+  int* jCol = jCol_;
 
   // extend Jac to the p and n parts --- sparsity
   if(iJacS != nullptr && jJacS != nullptr) {
@@ -1147,7 +1148,8 @@ void hiopMatrixRajaSparseTriplet::set_Jac_FR(const hiopMatrixSparse& Jac_c,
 //        int idx_temp = i+1;
         // copy from base Jac_c
         while(k_base < Jc_row_st[i+1]) {
-	        iRow[0] = 0;
+	        iRow[l] = i;
+          jCol[k] = jcol_c[k_base];
 //          iRow_[k] = iJacS[k] = i;
 //          jCol_[k] = jJacS[k] = jcol_c[k_base];
           k++;
@@ -1177,7 +1179,8 @@ void hiopMatrixRajaSparseTriplet::set_Jac_FR(const hiopMatrixSparse& Jac_c,
 
         // copy from base Jac_c
         while(k_base < Jd_row_st[i+1]) {
-            iRow_[0] = 0;
+            iRow[k] = m_c + i;
+            jCol[k] = jcol_d[k_base];
 //          iRow_[k] = iJacS[k] = m_c + i;
 //          jCol_[k] = jJacS[k] = jcol_d[k_base];
           k++;
