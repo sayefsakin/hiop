@@ -848,6 +848,7 @@ void hiopAlgPrimalDecomposition::set_initial_alpha_ratio(const double alpha)
           rec_val += aux;
         }
         //printf("recourse value: is %18.12e)\n", rec_val);
+	LinearAlgebraFactory::set_mem_space("DEFAULT");
 	hiopVector* grad_aux;
         grad_aux = LinearAlgebraFactory::createVector(nc_);
         grad_aux->setToZero(); 
@@ -909,6 +910,7 @@ void hiopAlgPrimalDecomposition::set_initial_alpha_ratio(const double alpha)
               rec_val += aux;
             }
             //printf("recourse value: is %18.12e)\n", rec_val);
+	    LinearAlgebraFactory::set_mem_space("DEFAULT");
 	    hiopVector* grad_aux;
             grad_aux = LinearAlgebraFactory::createVector(nc_);
             grad_aux->setToZero(); 
@@ -1180,7 +1182,7 @@ hiopSolveStatus hiopAlgPrimalDecomposition::run_single()
       }
       rval += aux;
       //assert("for debugging" && false); //for debugging purpose
-    
+      LinearAlgebraFactory::set_mem_space("DEFAULT");  
       hiopVector* grad_aux;
       grad_aux = LinearAlgebraFactory::createVector(nc_);
       grad_aux->setToZero(); 
