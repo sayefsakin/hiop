@@ -547,15 +547,15 @@ bool hiopAlgPrimalDecomposition::stopping_criteria(const int it, const double co
 }
   
 double hiopAlgPrimalDecomposition::
-step_size_inf(const int nc, const hiopVector& x, const hiopVector& x0)
+step_size_inf(const int nc, const int* idx, const hiopVector& x, const hiopVector& x0)
 {
   double step = -1e20;
   hiopVector* temp;
-  temp = LinearAlgebraFactory::createVector(x.get_local_size()); 
-  temp->copyFrom(x);   
+  temp = LinearAlgebraFactory::createVector(x0.get_local_size()); 
+  temp->copyFrom(idx,x);   
   temp->axpy(-1.0,x0); 
   step = temp->infnorm();
-
+  temp->print();
   return step;
 }
 
@@ -618,12 +618,12 @@ void hiopAlgPrimalDecomposition::set_initial_alpha_ratio(const double alpha)
   
     hiopVector* hess_appx;
     hess_appx = LinearAlgebraFactory::createVector(nc_); 
-    double* hess_appx_vec=hess_appx->local_data_host();
+    double* hess_appx_vec=hess_appx->local_data();
    
     hiopVector* x0;
     x0 = LinearAlgebraFactory::createVector(nc_);
     x0->setToZero(); 
-    double* x0_vec=x0->local_data_host();
+    double* x0_vec=x0->local_data();
     
     //local recourse terms for each evaluator, defined accross all processors
     double rec_val = 0.;
@@ -840,7 +840,12 @@ void hiopAlgPrimalDecomposition::set_initial_alpha_ratio(const double alpha)
         for(int ri=0; ri<cont_idx.size(); ri++) {
           aux = 0.;
           int idx_temp = cont_idx[ri];
-
+	  //printf("x0 values\n");
+          //x0->print(); 
+	  //for(int i=0;i<nc_;i++) {
+	  //  printf("x %d %18.12e\n",i,x0_vec[i]); 
+	  //}
+	  printf("contingency  %d start\n",idx_temp); 
           bret = master_prob_->eval_f_rterm(idx_temp, nc_, x0_vec, aux); // solving the recourse problem
           if(!bret) {
               //todo
@@ -903,6 +908,7 @@ void hiopAlgPrimalDecomposition::set_initial_alpha_ratio(const double alpha)
               aux = 0.;
               int idx_temp = cont_idx[ri];
               
+	      printf("contingency  %d start\n",idx_temp); 
               bret = master_prob_->eval_f_rterm(idx_temp, nc_, x0_vec, aux); //need to add extra time here
               if(!bret) {
               //todo
@@ -1056,7 +1062,7 @@ void hiopAlgPrimalDecomposition::set_initial_alpha_ratio(const double alpha)
           printf( "Elapsed time for entire iteration %d is %f\n",it, t2 - t1 );  
         }
         // print out the iteration from the master rank
-	dinf = step_size_inf(nc_, *x_, *x0);
+	dinf = step_size_inf(nc_, xc_idx_,*x_, *x0);
 	
 
       } else {
@@ -1109,15 +1115,15 @@ hiopSolveStatus hiopAlgPrimalDecomposition::run_single()
   //double grad_r[nc_];
   hiopVector* grad_r;
   grad_r = LinearAlgebraFactory::createVector(nc_); 
-  double* grad_r_vec=grad_r->local_data_host();
+  double* grad_r_vec=grad_r->local_data();
   
   hiopVector* hess_appx;
   hess_appx = LinearAlgebraFactory::createVector(nc_); 
-  double* hess_appx_vec=hess_appx->local_data_host();
+  double* hess_appx_vec=hess_appx->local_data();
  
   hiopVector* x0;
   x0 = LinearAlgebraFactory::createVector(nc_); 
-  double* x0_vec=x0->local_data_host();
+  double* x0_vec=x0->local_data();
  
   for(int i=0; i<nc_; i++) {
     grad_r_vec[i] = 0.;
@@ -1182,7 +1188,7 @@ hiopSolveStatus hiopAlgPrimalDecomposition::run_single()
       }
       rval += aux;
       //assert("for debugging" && false); //for debugging purpose
-      LinearAlgebraFactory::set_mem_space("DEFAULT");  
+      LinearAlgebraFactory::set_mem_space("DEFAULT");
       hiopVector* grad_aux;
       grad_aux = LinearAlgebraFactory::createVector(nc_);
       grad_aux->setToZero(); 
@@ -1272,7 +1278,7 @@ hiopSolveStatus hiopAlgPrimalDecomposition::run_single()
     //printf("solving full problem starts, iteration %d \n",it);
     solver_status_ = master_prob_->solve_master(*x_,true);
     
-    dinf = step_size_inf(nc_, *x_, *x0); 
+    dinf = step_size_inf(nc_, xc_idx_,*x_, *x0); 
 
     // print solution x at the end of a full solve
     if(ver_ >=outlevel2) {
