@@ -10,12 +10,16 @@ set(testMatrixSparse_SRC testMatrixSparse.cpp LinAlg/matrixTestsSparseTriplet.cp
 # Set sources for symmetric sparse matrix tests
 set(testMatrixSymSparse_SRC testMatrixSymSparse.cpp LinAlg/matrixTestsSymSparseTriplet.cpp)
 
+# Set sources for RAJA scan test
+set(testRajaScan_SRC testRajaScan.cpp LinAlg/matrixTestsSymSparseTriplet.cpp) 
+
 # Check if using RAJA and Umpire and add RAJA sources
 if(HIOP_USE_RAJA)
   set(testVector_SRC ${testVector_SRC} LinAlg/vectorTestsRajaPar.cpp LinAlg/vectorTestsIntRaja.cpp)
   set(testMatrix_SRC ${testMatrix_SRC} LinAlg/matrixTestsRajaDense.cpp)
   set(testMatrixSparse_SRC ${testMatrixSparse_SRC} LinAlg/matrixTestsRajaSparseTriplet.cpp)
   set(testMatrixSymSparse_SRC ${testMatrixSymSparse_SRC} LinAlg/matrixTestsRajaSymSparseTriplet.cpp)
+  set(testRajaScan_SRC ${testRajaScan_SRC} LinAlg/matrixTestsRajaSymSparseTriplet.cpp)
 endif()
 
 if(HIOP_USE_GPU AND HIOP_USE_CUDA)
@@ -42,3 +46,8 @@ target_link_libraries(testMatrixSparse PRIVATE HiOp::HiOp)
 # Build symmetric sparse matrix test
 add_executable(testMatrixSymSparse ${testMatrixSymSparse_SRC})
 target_link_libraries(testMatrixSymSparse PRIVATE HiOp::HiOp)
+
+# Build Raja scan test
+add_executable(testRajaScan ${testRajaScan_SRC})
+target_link_libraries(testRajaScan PRIVATE HiOp::HiOp)
+
