@@ -219,8 +219,8 @@ public:
     assert(A.m() == A.n()); // A is square matrix
     assert(diag.get_size() == B.m()); // B is square matrix
     assert(A.m() >= B.m()); // A is larger or equal to B
-    assert(W.m() == W.n()); // W is square matrix
-    assert(W.m() == A.m()); // W has same dim as A
+//    assert(W.m() == W.n()); // W is square matrix
+//    assert(W.m() == A.m()); // W has same dim as A
   
     const local_ordinal_type A_M = A.m();
     const local_ordinal_type A_N_loc = A.n();
@@ -239,10 +239,12 @@ public:
     diag.setToConstant(D_val);
   
     A.set_Hess_FR(B, A.i_row(), A.j_col(), A.M(), diag);
+    
+    return fail;
 
     // copy to a dense matrix
-    W.setToConstant(W_val);
-    A.addUpperTriangleToSymDenseMatrixUpperTriangle(start_diag, alpha, W);
+//    W.setToConstant(W_val);
+//    A.addUpperTriangleToSymDenseMatrixUpperTriangle(start_diag, alpha, W);
     
     // get sparsity pattern
     const auto* iRow = getRowIndices(&A);

@@ -149,20 +149,17 @@ int main(int argc, char** argv)
     hiop::tests::MatrixTestsRajaSymSparseTriplet test;
     
     // Establishing sparsity pattern and initializing Matrix
-    local_ordinal_type entries_per_row = 5;
-    local_ordinal_type nnz = M_local * entries_per_row;
+    local_ordinal_type nnz = M_local * 5;
 
     hiop::hiopVectorRajaPar vec_m(M_global, mem_space);
     hiop::hiopMatrixRajaDense mxm_dense(2 * M_global, 2 * M_global, mem_space);
 
-    hiop::hiopMatrixSparse* m_sym = 
-      hiop::LinearAlgebraFactory::createMatrixSymSparse(M_local, nnz);
+    hiop::hiopMatrixSparse* m_sym = hiopMatrixRajaSymSparseTriplet(M_local, nnz, mem_space);
     initializeRajaSymSparseMat(m_sym);
 
     local_ordinal_type nnz_m2 = m_sym->numberOfOffDiagNonzeros() + M_global;
-    hiop::hiopMatrixSparse* m2_sym = 
-      hiop::LinearAlgebraFactory::createMatrixSymSparse(2*M_global, nnz_m2);
-
+    hiop::hiopMatrixSparse* m2_sym = hiopMatrixRajaSymSparseTriplet(2*M_global, nnz_m2, mem_space);
+ 
     fail += test.matrix_set_Hess_FR(mxm_dense, *m2_sym, *m_sym, vec_m);
 
     // Destroy testing objects
