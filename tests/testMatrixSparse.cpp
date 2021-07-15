@@ -183,7 +183,7 @@ int main(int argc, char** argv)
   {
     std::cout << "\nTesting hiopMatrixRajaSparseTriplet\n";
 
-    options.SetStringValue("mem_space", "device");
+    options.SetStringValue("mem_space", "um");
     hiop::LinearAlgebraFactory::set_mem_space(options.GetString("mem_space"));
     std::string mem_space = hiop::LinearAlgebraFactory::get_mem_space();
 
