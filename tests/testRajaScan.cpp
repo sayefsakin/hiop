@@ -63,7 +63,8 @@
 #include <hiopLinAlgFactory.hpp>
 #include <hiopVectorPar.hpp>
 #include <hiopMatrixDenseRowMajor.hpp>
-
+#include <hiopMatrixSparseTriplet.hpp>
+#include <hiopMatrixRajaSparseTriplet.hpp>
 #include "LinAlg/matrixTestsSymSparseTriplet.hpp"
 
 #ifdef HIOP_USE_RAJA
@@ -152,19 +153,15 @@ int main(int argc, char** argv)
     local_ordinal_type nnz = M_local * 5;
 
     hiop::hiopVectorRajaPar vec_m(M_global, mem_space);
-    hiop::hiopMatrixRajaDense mxm_dense(2 * M_global, 2 * M_global, mem_space);
 
-    hiop::hiopMatrixSparse* m_sym = hiopMatrixRajaSymSparseTriplet(M_local, nnz, mem_space);
-    initializeRajaSymSparseMat(m_sym);
+    hiop::hiopMatrixRajaSymSparseTriplet m_sym(M_local, nnz, mem_space);
+    initializeRajaSymSparseMat(&m_sym);
 
-    local_ordinal_type nnz_m2 = m_sym->numberOfOffDiagNonzeros() + M_global;
-    hiop::hiopMatrixSparse* m2_sym = hiopMatrixRajaSymSparseTriplet(2*M_global, nnz_m2, mem_space);
+    local_ordinal_type nnz_m2 = m_sym.numberOfOffDiagNonzeros() + M_global;
+    hiop::hiopMatrixRajaSymSparseTriplet m2_sym(2*M_global, nnz_m2, mem_space);
  
-    fail += test.matrix_set_Hess_FR(mxm_dense, *m2_sym, *m_sym, vec_m);
+    fail += test.matrix_set_Hess_FR(m2_sym, m_sym, vec_m);
 
-    // Destroy testing objects
-    delete m_sym;
-    delete m2_sym;
   }
 #endif
 

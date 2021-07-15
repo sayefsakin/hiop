@@ -1672,7 +1672,9 @@ void hiopMatrixRajaSymSparseTriplet::set_Hess_FR(const hiopMatrixSparse& Hess,
       );
 */     
       RAJA::inclusive_scan_inplace<hiop_raja_exec>(m1_row_start,m1_row_start+m1+1,RAJA::operators::plus<int>());
-      
+
+return;
+     
       RAJA::forall<hiop_raja_exec>(
         RAJA::RangeSegment(0, m2),
         RAJA_LAMBDA(RAJA::Index_type i)
