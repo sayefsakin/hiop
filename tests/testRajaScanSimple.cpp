@@ -17,8 +17,6 @@
 #define MY_RAJA_GPU_BLOCK_SIZE 128
 
 using my_raja_exec   = RAJA::cuda_exec<MY_RAJA_GPU_BLOCK_SIZE>;
-using my_raja_reduce = RAJA::cuda_reduce;
-using my_raja_atomic = RAJA::cuda_atomic;
 
 #define RAJA_LAMBDA [=] __device__
  
