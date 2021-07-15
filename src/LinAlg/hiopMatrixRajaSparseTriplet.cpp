@@ -1631,7 +1631,11 @@ void hiopMatrixRajaSymSparseTriplet::set_Hess_FR(const hiopMatrixSparse& Hess,
 
     int* M1iRow = M1.i_row();
     int* M1jCol = M1.j_col();
-    
+
+    std::cout << "m1 = " << m1 << std::endl;  // 100 in unit test
+    std::cout << "m2 = " << m2 << std::endl;  //  50 in unit test
+    std::cout << "mem_space_ = " << mem_space_ << std::endl;  //  UM in unit test
+
     if(m2 > 0) {
       auto& resmgr = umpire::ResourceManager::getInstance();
       umpire::Allocator devalloc = resmgr.getAllocator(mem_space_);
@@ -1649,7 +1653,7 @@ void hiopMatrixRajaSymSparseTriplet::set_Hess_FR(const hiopMatrixSparse& Hess,
           }
         }
       );
-
+/*
       RAJA::forall<hiop_raja_exec>(
         RAJA::RangeSegment(0, m2),
         RAJA_LAMBDA(RAJA::Index_type i)
@@ -1666,7 +1670,7 @@ void hiopMatrixRajaSymSparseTriplet::set_Hess_FR(const hiopMatrixSparse& Hess,
           }
         }
       );
-     
+*/     
       RAJA::inclusive_scan_inplace<hiop_raja_exec>(m1_row_start,m1_row_start+m1+1,RAJA::operators::plus<int>());
       
       RAJA::forall<hiop_raja_exec>(

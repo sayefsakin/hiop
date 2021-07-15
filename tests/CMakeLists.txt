@@ -20,6 +20,7 @@ if(HIOP_USE_RAJA)
   set(testMatrixSparse_SRC ${testMatrixSparse_SRC} LinAlg/matrixTestsRajaSparseTriplet.cpp)
   set(testMatrixSymSparse_SRC ${testMatrixSymSparse_SRC} LinAlg/matrixTestsRajaSymSparseTriplet.cpp)
   set(testRajaScan_SRC ${testRajaScan_SRC} LinAlg/matrixTestsRajaSymSparseTriplet.cpp)
+  set(testRajaScanSimple_SRC testRajaScanSimple.cpp) 
 endif()
 
 if(HIOP_USE_GPU AND HIOP_USE_CUDA)
@@ -27,7 +28,8 @@ if(HIOP_USE_GPU AND HIOP_USE_CUDA)
       testVector.cpp LinAlg/vectorTestsIntRaja.cpp
       testMatrixDense.cpp LinAlg/matrixTestsRajaDense.cpp
       testMatrixSparse.cpp LinAlg/matrixTestsRajaSparseTriplet.cpp
-      testMatrixSymSparse.cpp LinAlg/matrixTestsRajaSymSparseTriplet.cpp)
+      testMatrixSymSparse.cpp LinAlg/matrixTestsRajaSymSparseTriplet.cpp
+      testRajaScanSimple.cpp)
   set_source_files_properties(${cuda_sources} PROPERTIES LANGUAGE CUDA)
 endif()
 
@@ -51,3 +53,7 @@ target_link_libraries(testMatrixSymSparse PRIVATE HiOp::HiOp)
 add_executable(testRajaScan ${testRajaScan_SRC})
 target_link_libraries(testRajaScan PRIVATE HiOp::HiOp)
 
+if(HIOP_USE_RAJA AND HIOP_USE_GPU)
+  add_executable(testRajaScanSimple ${testRajaScanSimple_SRC})
+  target_link_libraries(testRajaScanSimple PRIVATE HiOp::HiOp)
+endif()
