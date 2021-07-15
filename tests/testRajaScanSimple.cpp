@@ -68,6 +68,6 @@ int main(int argc, char** argv)
     hosalloc.deallocate(ar_hos);
     devalloc.deallocate(ar_dev);
   }
-
+  devalloc.deallocate(m1_row_start);
   return 0;
 }
