@@ -872,7 +872,8 @@ void hiopAlgPrimalDecomposition::set_alpha_max(const double alp_max)
     for(int it=0; it<max_iter_;it++) {
       
       if(my_rank_==0) {
-        t1 = MPI_Wtime(); 
+        t1 = MPI_Wtime();
+        printf("iteration  %d\n", it);
       }
       it_ = it;
       // solve the base case
@@ -1338,7 +1339,7 @@ hiopSolveStatus hiopAlgPrimalDecomposition::run_single()
 
   // Outer loop starts
   for(int it=0; it<max_iter_;it++) {
-    //printf("iteration  %d\n", it);
+    printf("iteration  %d\n", it);
     // solve the base case
     it_ = it;
     if(it==0) {
