@@ -109,10 +109,10 @@ public:
   hiopKKTLinSysCondensedSparse() = delete;
   virtual ~hiopKKTLinSysCondensedSparse();
 
-  virtual bool build_kkt_matrix(const double& delta_wx,
-                                const double& delta_wd,
-                                const double& delta_cc,
-                                const double& delta_cd);
+  virtual bool build_kkt_matrix(const hiopVector& delta_wx,
+                                const hiopVector& delta_wd,
+                                const hiopVector& delta_cc,
+                                const hiopVector& delta_cd);
 
   virtual bool solveCompressed(hiopVector& rx,
                                hiopVector& rd,
@@ -187,9 +187,6 @@ protected:
 
   /// Member for JacD'*Dd*JacD + H + Dx + delta_wx*I
   hiopMatrixSparseCSR* M_condensed_;
-
-  /// Inertia correction perturbations used in the (last) factorization
-  double delta_wx_;
 
 private:
   //placeholder for the code that decides which linear solver to used based on safe_mode_

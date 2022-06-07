@@ -77,8 +77,7 @@ hiopKKTLinSysCondensedSparse::hiopKKTLinSysCondensedSparse(hiopNlpFormulation* n
     Hess_lower_csr_(nullptr),
     Hess_upper_csr_(nullptr),
     Hess_csr_(nullptr),
-    M_condensed_(nullptr),
-    delta_wx_(0.)
+    M_condensed_(nullptr)
 {
 }
 
@@ -93,22 +92,22 @@ hiopKKTLinSysCondensedSparse::~hiopKKTLinSysCondensedSparse()
   delete Hess_lower_csr_;
 }
 
-bool hiopKKTLinSysCondensedSparse::build_kkt_matrix(const double& delta_wx_in,
-                                                    const double& delta_wd_in,
-                                                    const double& dcc,
-                                                    const double& dcd)
+bool hiopKKTLinSysCondensedSparse::build_kkt_matrix(const hiopVector& delta_wx_in,
+                                                    const hiopVector& delta_wd_in,
+                                                    const hiopVector& dcc,
+                                                    const hiopVector& dcd)
 {
   nlp_->runStats.kkt.tmUpdateInit.start();
-  
-  auto delta_wx = delta_wx_in;
-  auto delta_wd = delta_wd_in;
-  if(dcc!=0) {
-    //nlp_->log->printf(hovWarning, "LinSysCondensed: dual reg. %.6e primal %.6e %.6e\n", dcc, delta_wx, delta_wd);
-    assert(dcc == dcd);
-    delta_wx += fabs(dcc);
-    delta_wd += fabs(dcc);
-  }
-  delta_wx_ = delta_wx;
+
+  // TODO  delta_wx + delta_cc ?   add is_equal
+//  auto delta_wx = delta_wx_in;
+//  auto delta_wd = delta_wd_in;
+//  if(dcc!=0) {
+//    //nlp_->log->printf(hovWarning, "LinSysCondensed: dual reg. %.6e primal %.6e %.6e\n", dcc, delta_wx, delta_wd);
+//    assert(dcc == dcd);
+//    delta_wx += fabs(dcc);
+//    delta_wd += fabs(dcc);
+//  }
 
   hiopMatrixSymSparseTriplet* Hess_triplet = dynamic_cast<hiopMatrixSymSparseTriplet*>(Hess_);
   HessSp_ = Hess_triplet; //dynamic_cast<hiopMatrixSymSparseTriplet*>(Hess_);
@@ -137,7 +136,7 @@ bool hiopKKTLinSysCondensedSparse::build_kkt_matrix(const double& delta_wx_in,
     Hd_ = LinearAlgebraFactory::create_vector(nlp_->options->GetString("mem_space"), nineq);
   }
   Hd_->copyFrom(*Dd_);  
-  Hd_->addConstant(delta_wd);
+  Hd_->axpy(1., delta_wd_in);
 
   nlp_->runStats.kkt.tmUpdateInit.stop();
   nlp_->runStats.kkt.tmUpdateLinsys.start();
@@ -283,8 +282,8 @@ bool hiopKKTLinSysCondensedSparse::build_kkt_matrix(const double& delta_wx_in,
   //
   Hess_csr_->add_matrix_numeric(*M_condensed_, 1.0, *JtDiagJ_, 1.0);
 
-  if(delta_wx>0) {
-    M_condensed_->addDiagonal(delta_wx);
+  if(!delta_wx_in.is_zero()) {
+    M_condensed_->addDiagonal(1.0, delta_wx_in);
   }
 
   M_condensed_->addDiagonal(1.0, *Dx_);
