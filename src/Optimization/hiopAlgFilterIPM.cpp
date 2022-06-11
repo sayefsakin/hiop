@@ -1667,7 +1667,7 @@ hiopSolveStatus hiopAlgFilterIPMNewton::run()
   hiopKKTLinSys* kkt = decideAndCreateLinearSystem(nlp);
   assert(kkt != NULL);
   
-  if(nlp->options->GetString("reg_method")=="dual_first" && nlp->options->GetString("KKTLinsys")=="normaleqn") {
+  if(nlp->options->GetString("reg_priority")=="dual_first" && nlp->options->GetString("KKTLinsys")=="normaleqn") {
     pd_perturb_ = new hiopPDPerturbationDualFirst();
   } else {
     pd_perturb_ = new hiopPDPerturbation();
